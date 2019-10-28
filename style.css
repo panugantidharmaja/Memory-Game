@@ -1,0 +1,32 @@
+.game-area {
+    width: 50%;
+    height: auto;
+    margin-top: 5%;
+    padding: 5%;
+    border: 1px solid #000;
+    display: none;
+}
+
+.question,
+.dashboard {
+    width: 70%;
+    height: 30%;
+    border: 1px solid #000;
+    margin-top: 5%;
+}
+
+#text-area {
+    width: 70%;
+    height: 20%;
+    margin-top: 5%;
+}
+
+.score,
+.time,
+.correctQuestions {
+    width: 50%;
+    height: 20%;
+    display: inline-block;
+    border: 1px solid #000;
+    margin: 3% 5%;
+}

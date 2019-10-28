@@ -1,0 +1,38 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Memory Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="form">
+
+        Enter your name:<input type="text" name="name" id="name">
+        <div class="start-button"><button id="start-game" onclick="start()">Start Game</button></div>
+    </div>
+    <div class="heading"></div>
+    <div class="game-area">
+
+        <div class="question"></div>
+        <div class="text-area">
+            <textarea name="input" id="text-area" cols="30" rows="10" value="text"></textarea>
+        </div>
+        <div class="buttons">
+            <button class="check-answer" onclick="checkFunction()">Check Answer</button>
+            <button class="playAgain" onclick="restartGame()">Play Again</button>
+        </div>
+        <div class="dashboard">
+            <div class="score"></div>
+            <div class="correctQuestions"></div>
+            <div class="time"></div>
+        </div>
+
+    </div>
+</body>
+<script src="script.js"></script>
+
+</html>
