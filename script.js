@@ -15,18 +15,27 @@ var score = 0;
 var scoreIncrement;
 var count = 0;
 var timer;
-var countdown;
+var countdown1, countdown2;
+var quesTimer, anwTimer;
 var names = new Object();
 
+function submit() {
+  totalQuestions = 0;
+  document.getElementsByClassName("form")[0].style.display = "none";
+  document.getElementsByClassName("playAgain")[0].style.display = "none";
+  start();
+}
+
 function start() {
-  clearInterval(countdown);
+  clearInterval(quesTimer);
+  clearInterval(anwTimer);
   levelNumber = 1;
   startGame();
 }
 
 function startGame() {
   totalQuestions = 0;
-  document.getElementsByClassName("question")[0].style.display = "block";
+  document.getElementsByClassName("game-area")[0].style.display = "block";
   document.getElementsByClassName("check-answer")[0].style.display = "block";
   document.getElementsByClassName("playAgain")[0].style.display = "none";
   document.getElementsByClassName("time")[0].style.display = "block";
@@ -34,12 +43,22 @@ function startGame() {
   levelNumber = 1;
   gameArea.style.display = "block";
   //startBtn.style.display = "none";
+
   level(levelNumber);
   i = 1;
 }
 
 function level(levelNumber) {
-  heading.innerHTML = "Test - " + levelNumber;
+  clearInterval(countdown1);
+  clearInterval(countdown2);
+  heading.innerHTML =
+    "Level - " +
+    levelNumber +
+    "<br>" +
+    "See the Question and try to memorize it." +
+    "<br>" +
+    "Once Question disappers, guess the question" +
+    "<br>";
   if (levelNumber == 1) {
     timer = 5;
     scoreIncrement = 3;
@@ -49,23 +68,28 @@ function level(levelNumber) {
   } else if (levelNumber == 3) {
     timer = 3;
     scoreIncrement = 5;
-  } else if (levelNumber >= 4) {
+  } else if (levelNumber > 3) {
     //gameArea.style.display = "none";
-    question.innerHTML = "";
+    console.log("reapeat");
     displayScoreBoard();
+    levelNumber = 1;
+    clearInterval(countdown2);
+    clearInterval(countdown1);
+    gameArea.style.display = "none";
   }
-
-  if (i <= 5) {
-    textArea.style.display = "none";
-    ques = createQuestions(i);
-    document.getElementsByClassName("question")[0].innerHTML = ques;
-    setTime(timer);
-  } else if (i > 5) {
+  console.log("hey");
+  textArea.style.display = "none";
+  ques = createQuestions(i);
+  console.log(ques);
+  document.getElementsByClassName("question")[0].innerHTML = ques;
+  var quesTimer = setQuestionTimer(timer);
+  if (i > 5) {
     console.log("dhsk");
     i = 1;
     console.log(i);
     levelNumber += 1;
-    clearInterval(countdown);
+    clearInterval(countdown2);
+    clearInterval(countdown1);
     // level(levelNumber);
   }
 }
@@ -73,10 +97,13 @@ function level(levelNumber) {
 function checkFunction() {
   console.log("ln-" + levelNumber);
   var values = checkAnswer(ques);
-  document.getElementsByClassName("score")[0].innerHTML = values[0];
+  document.getElementsByClassName("score")[0].innerHTML =
+    "Score : " + values[0];
   document.getElementsByClassName("correctQuestions")[0].innerHTML =
-    "Correct Question : " + values[1] + " / " + values[2];
-  clearInterval(countdown);
+    "Correct Questions : " + values[1] + " / " + values[2];
+  clearInterval(countdown2);
+  clearInterval(countdown1);
+
   i++;
   if (i > 5) {
     levelNumber++;
@@ -163,18 +190,36 @@ function question5() {
   return txt;
 }
 
-function setTime(timer) {
-  //   var time;
-  document.getElementsByClassName("time")[0].textContent = timer + "seconds";
+function setQuestionTimer(timer) {
+  var time = timer;
+  document.getElementsByClassName("time")[0].textContent = time + "seconds";
   var seconds = document.getElementsByClassName("time")[0].textContent;
-  countdown = setInterval(function() {
-    timer--;
-    document.getElementsByClassName("time")[0].textContent = timer + " seconds";
-    if (timer <= 0) {
-      clearInterval(countdown);
+  countdown1 = setInterval(function() {
+    time--;
+    document.getElementsByClassName("time")[0].textContent = time + " seconds";
+    if (time <= 0) {
+      clearInterval(countdown1);
+
       document.getElementsByClassName("question")[0].innerHTML = "";
       textArea.style.display = "block";
       document.getElementById("text-area").value = "";
+      var anwTimer = setAnswerTimer(timer);
+    }
+  }, 1000);
+}
+
+function setAnswerTimer(timer) {
+  var time = timer;
+  document.getElementsByClassName("time")[0].textContent = time + "seconds";
+  var seconds = document.getElementsByClassName("time")[0].textContent;
+  countdown2 = setInterval(function() {
+    time--;
+    document.getElementsByClassName("time")[0].textContent = time + " seconds";
+    if (time <= 0) {
+      clearInterval(countdown2);
+      document.getElementsByClassName("question")[0].innerHTML = "";
+      //textArea.style.display = "block";
+      checkFunction();
     }
   }, 1000);
 }
@@ -182,21 +227,17 @@ function setTime(timer) {
 function checkAnswer(ques) {
   totalQuestions++;
   var answer = document.getElementById("text-area").value;
-  if (i <= 3) {
-    if (answer.toUpperCase() == ques.toUpperCase()) {
-      count++;
-      score += scoreIncrement;
-    } else score -= scoreIncrement;
-  } else if (i > 3) {
-    if (answer == ques) {
-      count++;
-      score += scoreIncrement;
-    } else score -= scoreIncrement;
-  }
+  if (answer.toUpperCase() == ques.toUpperCase()) {
+    count++;
+    score += scoreIncrement;
+  } else if (answer == "") score = score;
+  else if (answer != score) score -= scoreIncrement;
   return [score, count, totalQuestions];
 }
 
 function displayScoreBoard() {
+  clearInterval(quesTimer);
+  clearInterval(anwTimer);
   var output = "";
   //   gameArea.innerHTML +=
   //     document.getElementById("name").value +
@@ -206,13 +247,16 @@ function displayScoreBoard() {
   //     count +
   //     "/" +
   //     totalQuestions;
-  document.getElementsByClassName("playAgain")[0].style.display = "block";
+
   if (names.hasOwnProperty(document.getElementById("name").value)) {
     var objValues = [];
     for (var o in names) {
       objValues.push(names[o]);
     }
-    console.log(objValues[0][0]);
+
+    console.log(objValues[0][2]);
+    totalQuestions = objValues[0][2] + totalQuestions;
+    console.log(totalQuestions);
     if (objValues[0][0] < score) {
       console.log(score);
       names[document.getElementById("name").value] = [
@@ -234,21 +278,43 @@ function displayScoreBoard() {
       totalQuestions
     ];
   console.log(names);
-  document.getElementsByClassName("question")[0].style.display = "none";
+
   document.getElementsByClassName("check-answer")[0].style.display = "none";
   document.getElementsByClassName("time")[0].style.display = "none";
+  document.getElementsByClassName("heading")[0];
   for (var prop in names) {
-    output += prop + ":" + names[prop];
+    output +=
+      "<br>" +
+      "Name - " +
+      prop +
+      "<br></br>" +
+      "Details :" +
+      "<br></br>" +
+      " Score:" +
+      names[prop][0] +
+      "<br>" +
+      "Correct Questions: " +
+      names[prop][1] +
+      "<br>" +
+      "Total Questions: " +
+      names[prop][2];
   }
   document.getElementsByClassName("heading")[0].innerHTML = output;
-  clearInterval(countdown);
+  document.getElementsByClassName("playAgain")[0].style.display = "block";
+  clearInterval(countdown2);
+  clearInterval(countdown1);
 }
 
 function restartGame() {
-  score = 0;
-  document.getElementById("name").style.display = "block";
-  startBtn.style.display = "block";
+  //score = 0;
+  document.getElementsByClassName("playAgain")[0].style.display = "none";
+  totalQuestions = 0;
+  document.getElementsByClassName("form")[0].style.display = "block";
   console.log("repeat");
-  clearInterval(countdown);
+  document.getElementsByClassName("score")[0].innerHTML = score;
+  score = 0;
+  clearInterval(countdown2);
+  clearInterval(countdown1);
+  levelNumber = 1;
   start();
 }
